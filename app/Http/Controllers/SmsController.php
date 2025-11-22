@@ -30,7 +30,7 @@ class SmsController extends Controller
                     $fail('The ' . $attribute . ' must be a future date and time.');
                 }
             }],
-            'sender' => 'required|string'
+            'sender' => 'required|string|max:11'
         ]);
 
         if ($validator->fails()) {
