@@ -1,59 +1,363 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Here’s your updated README with **Sanctum authentication clearly marked as required** (full file, ready to copy–paste):
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+````markdown
+# 📩 SMS Scheduler API
 
-## About Laravel
+RESTful API for sending **instant** and **scheduled** SMS messages.  
+Built with Laravel, queues, and a clean JSON-based workflow.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- ✅ Send SMS instantly to one or multiple recipients
+- 🕒 Schedule SMS messages for a future date/time
+- 📦 Store each SMS batch with status (`pending`, `queued`, `sent`, `failed`)
+- 🔄 Queue-powered processing (no blocking HTTP requests)
+- 🧾 View SMS history and filter by status
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🧰 Tech Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Framework:** Laravel (PHP)
+- **Database:** MySQL / PostgreSQL
+- **Queue:** Database / Redis
+- **SMS Gateway:** nigeriabulksms.com
+- **Auth:** Laravel Sanctum (all endpoints are protected)
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🚀 Getting Started
 
-### Premium Partners
+### 1. Clone the repository
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+git clone https://github.com/uhweka13/sms-scheduler-api.git
+cd sms-scheduler-api
+````
 
-## Contributing
+### 2. Install dependencies
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer install
+```
 
-## Code of Conduct
+### 3. Environment setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Copy the example environment file and generate an app key:
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Update the following keys in `.env`:
 
-## License
+```env
+APP_NAME="SMS Scheduler API"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+APP_TIMEZONE=Africa/Lagos
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sms_scheduler
+DB_USERNAME=root
+DB_PASSWORD=
+
+QUEUE_CONNECTION=database   # or redis
+
+# Example SMS gateway config – update to match your nigeriabulksms credentials
+SMS_PROVIDER_URL="https://portal.nigeriabulksms.com/api"
+SMS_USERNAME=nigeriabulksms username
+SMS_PASSWORD=nigeriabulksms password
+```
+
+### 4. Run migrations
+
+```bash
+php artisan migrate
+```
+
+If you are using the **database queue**, also run:
+
+```bash
+php artisan queue:table
+php artisan migrate
+```
+
+### 5. Start the development server
+
+```bash
+php artisan serve
+```
+
+Your API will be available at:
+
+```text
+http://127.0.0.1:8000
+```
+
+### 6. Start the queue worker
+
+The queue worker processes the SMS jobs (both instant and scheduled):
+
+```bash
+php artisan queue:work
+```
+
+> If the queue worker is not running, scheduled and queued SMS will not be sent.
+
+---
+
+## 🔐 Authentication (Required)
+
+All API endpoints are **protected** and **require authentication** using **Laravel Sanctum**.
+
+To access any endpoint:
+
+1. Authenticate and obtain a Sanctum token (e.g. via your login route).
+2. Include the token in the `Authorization` header as a Bearer token.
+
+Example:
+
+```http
+Authorization: Bearer YOUR_API_TOKEN
+Accept: application/json
+```
+
+> Requests without a valid Sanctum token will be rejected.
+
+---
+
+## 📡 API Endpoints
+
+Base URL (example):
+
+```text
+/api/v1
+```
+
+> All endpoints below require a valid Sanctum token in the `Authorization` header.
+
+---
+
+### 1. Send SMS (Instant or Scheduled)
+
+**Endpoint**
+
+```http
+POST /api/v1/sms/send
+```
+
+**Request Body**
+
+```json
+{
+  "recipients": ["081xxxxxx", "080xxxxxxx"],
+  "sender": "MyBrand",
+  "message": "Hello from SMS Scheduler API!",
+  "send_at": "2025-11-21 21:47:00"
+}
+```
+
+* `recipients` – array of recipient phone numbers (strings)
+* `sender` – sender ID, max **11 characters**
+* `message` – SMS message body
+* `send_at`:
+
+  * `null` → send immediately
+  * datetime string (`Y-m-d H:i:s`) → schedule for later (uses `APP_TIMEZONE`)
+
+**Example: Send Immediately**
+
+```json
+{
+  "recipients": ["081xxxxxx"],
+  "sender": "MyBrand",
+  "message": "This SMS will be sent right now.",
+  "send_at": null
+}
+```
+
+**Success Response (example)**
+
+```json
+{
+  "status": "success",
+  "message": "SMS submitted successfully",
+  "data": ""
+}
+```
+
+---
+
+### 2. List SMS History
+
+**Endpoint**
+
+```http
+GET /api/v1/sms
+```
+
+**Query Parameters (optional)**
+
+* `status` – `pending`, `queued`, `sent`, `failed`
+
+**Example**
+
+```http
+GET /api/v1/sms?status=queued
+```
+
+**Response (example)**
+
+```json
+{
+    "data": {
+        "data": [
+            {
+                "id": 4,
+                "recipients": [
+                    "081xxxxxx",
+                    "081xxxxxx"
+                ],
+                "message": "Message",
+                "send_at": "2025-11-21T21:20:00.000000Z",
+                "status": "sent",
+                "provider_response": "{\"status\":\"OK\",\"count\":2,\"price\":16}",
+                "sender": "senderval",
+                "created_at": "2025-11-21T21:19:26.000000Z",
+                "updated_at": "2025-11-21T21:20:04.000000Z"
+            }
+        ],
+        "pagination": {
+            "current_page": 1,
+            "last_page": 1,
+            "per_page": 15,
+            "total": 1,
+            "from": 1,
+            "to": 1
+        }
+    },
+    "message": "Sms fetched",
+    "code": 200
+}
+```
+
+---
+
+### 3. Get a Single SMS Batch
+
+**Endpoint**
+
+```http
+GET /api/v1/sms/{id}
+```
+
+**Response (example)**
+
+```json
+{
+    "data": {
+        "id": 1,
+        "recipients": [
+            "081xxxxxx",
+            "081xxxxx"
+        ],
+        "message": "Test message",
+        "send_at": null,
+        "status": "pending",
+        "provider_response": null,
+        "sender": "MyApp",
+        "created_at": "2025-11-22T06:43:21.000000Z",
+        "updated_at": "2025-11-22T06:43:21.000000Z"
+    },
+    "message": "Sms fetched",
+    "code": 200
+}
+```
+
+---
+
+## 🗄 Database Schema
+
+Main SMS table (example name: `sms_models`):
+
+* `id` – primary key
+* `recipients` – `json`
+* `message` – `text`
+* `sender` – `string`
+* `send_at` – `timestamp` (nullable)
+* `status` – `enum('pending', 'queued', 'sent', 'failed')`
+* `created_at` / `updated_at` – timestamps
+
+Example migration snippet:
+
+```php
+Schema::create('sms_models', function (Blueprint $table) {
+    $table->id();
+    $table->json('recipients');
+    $table->text('message');
+    $table->string('sender');
+    $table->timestamp('send_at')->nullable();
+    $table->enum('status', ['pending', 'queued', 'sent', 'failed'])->default('pending');
+    $table->timestamps();
+});
+```
+
+---
+
+## ⚙️ How Scheduling Works (Internally)
+
+1. Client calls `POST /api/v1/sms/send` with the request data.
+
+2. The API creates a new record in `sms_models` with:
+
+   * `recipients`
+   * `sender`
+   * `message`
+   * `send_at`
+   * `status`:
+
+     * `pending` if `send_at` is `null`
+     * `queued` if `send_at` is a future datetime
+
+3. A job (e.g. `SendScheduledSms`) is dispatched:
+
+   * If `send_at` is provided → job is delayed until that time:
+
+     ```php
+     SendScheduledSms::dispatch($batch)->delay($sendAt);
+     ```
+
+   * Else → job runs immediately:
+
+     ```php
+     SendScheduledSms::dispatch($batch);
+     ```
+
+4. The job:
+
+   * Sends the SMS via the configured gateway.
+   * Updates `status` to `sent` or `failed`.
+
+---
+
+## 🧪 Tests
+
+```bash
+php artisan test
+```
+
+---
+
+## 👤 Author
+
+* **Name:** Uhweka Danjuma
+* **Email:** [uhweka@gmail.com](mailto:uhweka@gmail.com)
+* **GitHub:** [@uhweka13](https://github.com/uhweka13)
+
