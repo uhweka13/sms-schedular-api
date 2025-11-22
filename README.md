@@ -1,4 +1,3 @@
-Here’s your updated README with **Sanctum authentication clearly marked as required** (full file, ready to copy–paste):
 
 ````markdown
 # 📩 SMS Scheduler API
